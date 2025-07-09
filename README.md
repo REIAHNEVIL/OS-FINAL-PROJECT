@@ -1,8 +1,18 @@
 # OS-FINAL-PROJECT
+**PROJECT OVERVIEW:**
 
-MEMBER CONTRIBUTIONS:
+**INSTRUCTIONS ON HOW TO RUN THE SIMULATION:**
 
-**Jure Rhoanne Q. Batohanon:**
+**SCHEDULING ALGORITHMS USED IN THIS SIMULATION:**
+
+**TERMINAL OUTPUT EXAMPLES (Sample input and expected output):**
+
+**KNOWN BUGS, LIMITATIONS, OR INCOMPLETE FEATURES:**
 
 
-**Maria Katrina O. Esclamado:**
+**MEMBER CONTRIBUTIONS:**
+
+_**Jure Rhoanne Q. Batohanon:**_
+
+
+_**Maria Katrina O. Esclamado:**_
