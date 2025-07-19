@@ -72,22 +72,24 @@ def printGantt(events):
         print(times, "\n")
 
 def printStats(stats):
-    print("Per-process metrics:")   
+    print("Per-process metrics:")
     header = f"{'PID':>3} {'AT':>3} {'BT':>3} {'ST':>3} {'CT':>3} {'TAT':>4} {'RT':>3}"
     print(header)
     print("-" * len(header))
+    totalWaiting = 0
     totalTurnaround = totalResponse = 0
-    n = len(stats)
     for pid in sorted(stats):
-        tempStat = stats[pid]
-        totalTurnaround += tempStat['turnaround']
-        totalResponse  += tempStat['response']
-        print(f"{pid:>3} {tempStat['arrival']:>3} {tempStat['burst']:>3} {tempStat['startTime']:>3} {tempStat['completeTime']:>3} {tempStat['turnaround']:>4} {tempStat['response']:>3}")
-    averageTurnaround = totalTurnaround / n
-    averageResponse  = totalResponse / n
+        s = stats[pid]
+        totalTurnaround += s['turnaround']
+        totalResponse += s['response']
+        waiting = s['turnaround'] - s['burst']
+        totalWaiting += waiting
+        print(f"{pid:>3} {s['arrival']:>3} {s['burst']:>3} {s['startTime']:>3} {s['completeTime']:>3} {s['turnaround']:>4} {s['response']:>3}")
+    n = len(stats)
     print("\nAverages:")
-    print(f"  Average Turnaround Time: {averageTurnaround:.2f}")
-    print(f"  Average Response   Time: {averageResponse:.2f}")
+    print(f"  Average Turnaround Time: {totalTurnaround / n:.2f}")
+    print(f"  Average Response   Time: {totalResponse / n:.2f}")
+    print(f"  Average Waiting     Time: {totalWaiting / n:.2f}")
 
 def main():
     print("\n=== FIFO Scheduling Simulation ===\n")
