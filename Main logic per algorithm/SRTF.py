@@ -99,16 +99,20 @@ def printStats(stats):
     header = f"{'PID':>3} {'AT':>3} {'BT':>3} {'ST':>3} {'CT':>3} {'TAT':>4} {'RT':>3}"
     print(header)
     print("-" * len(header))
+    totalWaiting = 0
     totalTurnaround = totalResponse = 0
     for pid in sorted(stats):
         s = stats[pid]
         totalTurnaround += s['turnaround']
         totalResponse += s['response']
+        waiting = s['turnaround'] - s['burst']
+        totalWaiting += waiting
         print(f"{pid:>3} {s['arrival']:>3} {s['burst']:>3} {s['startTime']:>3} {s['completeTime']:>3} {s['turnaround']:>4} {s['response']:>3}")
     n = len(stats)
     print("\nAverages:")
     print(f"  Average Turnaround Time: {totalTurnaround / n:.2f}")
     print(f"  Average Response   Time: {totalResponse / n:.2f}")
+    print(f"  Average Waiting     Time: {totalWaiting / n:.2f}")
 
 def main():
     print("\n=== Shortest Remaining Time First (SRTF) Scheduling Simulation ===\n")
