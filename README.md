@@ -36,6 +36,7 @@ The simulator allows users to input or generate processes and simulate their exe
 
 ## **KNOWN BUGS, LIMITATIONS, OR INCOMPLETE FEATURES:**
 - Clear button does not include the Average Metrics display.
+  
 
 ## **MEMBER CONTRIBUTIONS:**
 
