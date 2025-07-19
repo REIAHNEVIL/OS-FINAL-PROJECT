@@ -213,7 +213,8 @@ def rr(processes, quantum=1):
     stat_list = [stats[p['pid']] for p in processes]
     return events, stat_list
 
-def mlfq(processes, quantums, allotments):
+
+def mlfq(processes, quantums, allotment):
     totalQueues = len(quantums)
 
     processes.sort(key=lambda p: p['arrival'])
@@ -225,16 +226,15 @@ def mlfq(processes, quantums, allotments):
     stats = {}
     queues = [[] for _ in range(totalQueues)]
     remaining = {p['pid']: p['burst'] for p in processes}
+    processMap = {p['pid']: p for p in processes}
     finished = 0
     n = len(processes)
 
     while finished < n:
-        # Add newly arrived processes to top queue
         while arrivalIndex < n and processes[arrivalIndex]['arrival'] <= time:
             queues[0].append(processes[arrivalIndex])
             arrivalIndex += 1
 
-        # Find first non-empty queue
         queueLevel = next((i for i, q in enumerate(queues) if q), None)
 
         if queueLevel is None:
@@ -246,36 +246,32 @@ def mlfq(processes, quantums, allotments):
         arrival = current['arrival']
         burstLeft = remaining[pid]
 
-        # Set initial stats if first time
         if pid not in stats:
             stats[pid] = {
+                'pid': pid,
                 'arrival': arrival,
                 'burst': origBurst[pid],
-                'startTime': time,
-                'executions': []
+                'startTime': time
             }
 
-        quantum = quantums[queueLevel]
-        runTime = min(quantum, burstLeft)
-        start = time
-        end = time + runTime
+        runTime = min(quantums[queueLevel], burstLeft)
 
-        # Track execution segment
-        stats[pid]['executions'].append({'start': start, 'duration': runTime})
-        events.append({'pid': pid, 'start': start, 'end': end})
+        events.append({
+            'start': time,
+            'end': time + runTime,
+            'pid': pid
+        })
 
         time += runTime
         remaining[pid] -= runTime
 
-        # Add new arrivals during runtime
         while arrivalIndex < n and processes[arrivalIndex]['arrival'] <= time:
             queues[0].append(processes[arrivalIndex])
             arrivalIndex += 1
 
         if remaining[pid] > 0:
             allotmentUsed[pid] += 1
-            # Demote if exceeded allotment
-            if allotmentUsed[pid] >= allotments[queueLevel] and queueLevel < totalQueues - 1:
+            if allotmentUsed[pid] >= allotment[queueLevel] and queueLevel < totalQueues - 1:
                 allotmentUsed[pid] = 0
                 queues[queueLevel + 1].append(current)
             else:
@@ -286,20 +282,6 @@ def mlfq(processes, quantums, allotments):
             stats[pid]['response'] = stats[pid]['startTime'] - arrival
             finished += 1
 
-    # Format for frontend
-    stats_list = []
-    for pid, data in stats.items():
-        stats_list.append({
-            'pid': pid,
-            'arrival': data['arrival'],
-            'burst': data['burst'],
-            'executions': [{'start': data['startTime'], 'duration': data['completeTime'] - data['startTime']}],
-            'startTime': data['startTime'],
-            'completeTime': data['completeTime'],
-            'turnaround': data['turnaround'],
-            'response': data['response']
-        })
-
-    return events, stats_list
-
+    stat_list = [stats[p['pid']] for p in processes]
+    return events, stat_list
            
