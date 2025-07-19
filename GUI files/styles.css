@@ -1,0 +1,315 @@
+﻿ body {
+    font-family: Arial, sans-serif;
+    margin: 20px;
+    width: 1440px;
+    height: 1024px;
+    background: linear-gradient(180deg, #31184B 0%, #100A16 100%);
+}
+
+h2 {
+    color: white;
+    font-size: 35px;
+    font-weight: bold;
+    z-index:1;
+    position:relative;
+    font-family:Arial;
+ 
+}
+
+.yellowBox {
+    width: 258px;
+    height: 48px;
+    flex-shrink: 0;
+    margin-top:75px;
+    z-index:0;
+    background-color: #F7D358;
+    border-radius: 20px;
+    box-shadow: 3px 25px 4px 0px rgba(0, 0, 0, 0.25);
+    position: absolute;
+    top: 0;
+    left: 0;
+}
+
+.title {
+    width: 1750px;
+    height: 189px;
+    flex-shrink: 0;
+    color: white;
+    font-weight: bold;
+    color: #FFF;
+    font-family: Arial;
+    font-size: 30px;
+    font-style: normal;
+    font-weight: 600;
+    line-height: 70px; /* 83.333% */
+    margin-left:350px;
+    margin-top:20px;
+}
+
+
+
+.gantt-block {
+    display: inline-block;
+    margin: 2px;
+    padding: 5px;
+    background-color: #4CAF50;
+    color: white;
+    text-align: center;
+    border-radius: 4px;
+}
+
+.form-container {
+    width: 269px;
+    height: 1204px;
+    flex-shrink: 0;
+    border-radius: 20px;
+    background: linear-gradient(180deg, #6D0C83 0%, #1A1A2E 100%);
+    box-shadow: 3px 30px 4px 0px rgba(0, 0, 0, 0.25);
+    top: 0;
+    left: 0px;
+    position: absolute;
+}
+
+    .form-container h2 {
+        text-align: center;
+        margin-bottom: 20px;
+        font-size: 20px;
+        font-weight: bold;
+
+    }
+
+#processForm {
+    display: flex;
+    flex-direction: column;
+    width: 150px;
+    margin: 20px auto;
+    margin-top: 30px;
+}
+
+
+    #processForm label {
+        margin-bottom: 5px;
+        font-weight: 500;
+        margin-left: -0px;
+    }
+
+    #processForm input {
+        margin-bottom: 15px;
+        padding: 5px;
+        font-size: 14px;
+        border-radius:5px;
+    }
+
+.form-buttons {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 20px;
+    column-gap: 20px;
+    
+}
+
+    .form-buttons button {
+        border: none;
+        padding: 8px 12px;
+        font-size: 14px;
+        font-weight: bold;
+        border-radius: 12px;
+        cursor: pointer;
+        width: 100px;
+        background: #AF1BAA;
+    }
+
+
+
+table {
+    width: 110%;
+    border-collapse: separate;
+    border-radius: 10px;
+    width: 1020px;
+    height: 48px;
+    flex-shrink: 0;
+    color: white;
+    font-weight:100;
+    font-family: Arial, sans-serif;
+    margin-top: -200px;
+    margin-left: 350px;
+    min-height: 200px;
+    background: linear-gradient(180deg, #0E001F 0%, #6D0C83 100%);
+   
+}
+
+    table td {
+        border-collapse: collapse;
+        padding: 10px;
+        text-align: center;
+        border-radius: 5px;
+        border-right: 1px solid white;
+    }
+
+    table th {
+        
+        border: 2px solid white;
+        padding: 10px;
+        color: white;
+        text-align: center;
+        border-radius: 5px;
+        background-color: #19052C; /* slightly lighter purple for header */
+        font-weight: bold;
+        border-radius: 5px;
+        border-color: #12F7FF;
+    }
+
+
+.progressContainer {
+    width: 150px;
+    height: 14px;
+    background-color: #333;
+    border-radius: 10px;
+    overflow: hidden;
+    border: 1px solid #999;
+    margin: 0 auto;
+    position: relative;
+}
+
+
+.progressBar {
+    height: 100%;
+    width: 0; 
+    background: linear-gradient(to right, #facc15, #f59e0b);
+    border-radius: 10px;
+    position: absolute;
+    left: 0;
+    top: 0;
+    transition: width 1s ease-in-out;
+}
+
+
+
+
+.controls {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-top: 20px;
+    font-family: Arial, sans-serif;
+}
+
+    .controls label {
+        margin-right: 10px;
+        font-weight: bold;
+        color: white;
+    }
+
+    .controls select {
+        width: 402px;
+        height: 30px;
+        flex-shrink: 0;
+        padding: 5px 10px;
+        border-radius: 5px;
+        border: none;
+        background-color: white;
+        font-size: 14px;
+        margin-left:110px;
+    }
+
+    .controls button {
+        padding: 6px 12px;
+        border: none;
+        border-radius: 5px;
+        color: white;
+        font-size: 14px;
+        cursor: pointer;
+    }
+
+        .controls button:first-of-type {
+            background-color: #6a1b9a; 
+            width:150px;
+        }
+
+        .controls button:last-of-type {
+            background-color: #4a148c; 
+            width:150px;
+        }
+
+.gantt-container {
+    width: 983px;
+    height: 150px;
+    flex-shrink: 0;
+    border-radius: 10px;
+    padding: 20px;
+    margin-top: 30px;
+    margin-left: 350px;
+    color: white;
+    font-family: Arial, sans-serif;
+    border: 1px solid #FFF;
+    background: #0E001F;
+}
+
+    .gantt-container h2 {
+        margin-top: 0;
+        font-size: 17px;
+        font-weight: bold;
+    }
+
+#ganttChart {
+    min-height: 100px;
+    margin-top: 10px;
+    background-color: #0E001F;
+    border-radius: 5px;
+    padding: 10px;
+    display: flex;
+    gap: 5px;
+    color: white;
+    font-family: Arial, sans-serif;
+}
+
+.gantt-block {
+    display: flex;
+    justify-content: center; /* center horizontally */
+    align-items: center; /* center vertically */
+    min-width: 60px;
+    padding: 10px;
+    border-radius: 5px;
+    color: white;
+    font-weight: bold;
+    text-align: center;
+    border: thin solid #ffffff; /* white border */
+}
+
+input:disabled {
+    background-color: #333;
+    color: #aaa;
+}
+
+.timeConfiguration {
+    width: 269px;
+    height: 1204px;
+    flex-shrink: 0;
+    border-radius: 20px;
+    background: linear-gradient(180deg, #6D0C83 0%, black 160%);
+    box-shadow: 3px 30px 4px 0px rgba(0, 0, 0, 0.25);
+    top: 0;
+    left: 300px;
+    align-content: center;
+    text-indent: 23px;
+}
+
+
+    .timeConfiguration input {
+        width: 133px;
+        margin-left: 23px;
+    }
+
+
+    .timeConfiguration label {
+        display: block;
+        margin-bottom: 5px;
+        width: 133px;
+        color: white;
+    }
+
+    .timeConfiguration button {
+        margin-left:40px;
+        font-weight:bold;
+        border:none;
+    }
