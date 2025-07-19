@@ -32,7 +32,6 @@ def mlfq(processes):
         print("Invalid input. Setting number of queues to default (4).")
         totalQueues = 4
 
-    # Ask for only one quantum and one allotment to be used in all queue levels
     try:
         unifiedQuantum = int(input("Enter TIME QUANTUM for all queues (default 1): ") or 1)
         unifiedAllotment = int(input("Enter TIME ALLOTMENT for all queues (default 1): ") or 1)
