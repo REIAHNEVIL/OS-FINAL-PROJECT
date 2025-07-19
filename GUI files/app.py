@@ -50,6 +50,7 @@ def set_conditions():
     except (TypeError, ValueError) as e:
         print("Error setting conditions:", e)
         return jsonify({'error': 'Invalid quantum or allotment'}), 400
+    
 
 @app.route('/run_scheduler', methods=['GET'])
 def run_scheduler():
@@ -57,29 +58,30 @@ def run_scheduler():
     print("Running scheduler with algorithm:", algorithm)  # Debugging line
 
     if algorithm == 'FIFO':
-        events, stats = fifo(process_list)
+        events, stats, averageMetrics = fifo(process_list)
     elif algorithm == 'SJF':
-        events, stats = sjf(process_list)
+        events, stats, averageMetrics = sjf(process_list)
     elif algorithm == 'SRTF':
-        events, stats = srtf(process_list)
+        events, stats, averageMetrics = srtf(process_list)
     elif algorithm == 'RR':
         quantum = int(request.args.get('quantum', 2))
-        events, stats = rr(process_list, quantum)
+        events, stats, averageMetrics = rr(process_list, quantum)
     elif algorithm == 'MLFQ':
-         q = conditions.get('quantum') or 1
-         a = conditions.get('allotment') or 1
+         q = int(request.args.get('quantum', 2)) 
+         a = int(request.args.get('allotment', 1))
          total_queues = 4
          quantums = [q] * total_queues
-         allotments = [a] * total_queues
-         events, stats = mlfq(process_list, quantums, allotments)
+         allotment = [a] * total_queues
+         events, stats, averageMetrics = mlfq(process_list, quantums, allotment)
 
     else:
         return jsonify({'error': 'Unknown algorithm'}), 400
 
     print("Scheduler output - Events:", events)
     print("Scheduler output - Stats:", stats)
+    print("Scheduler output - Average Metrics:", averageMetrics)
 
-    return jsonify({'events': events, 'stats': stats})
+    return jsonify({'events': events, 'stats': stats , 'averageMetrics' : averageMetrics})
 
 @app.route('/clear', methods=['POST'])
 def clear():
@@ -88,9 +90,14 @@ def clear():
     print("Process list cleared.")  # Debugging line
     return jsonify({'status': 'cleared'})
 
+import random  # Add this at the top if not already imported
 
-# Store conditions globally (optional: put in a config or session later)
-
+@app.route('/generate_random', methods=['GET'])
+def generate_random():
+    arrival = random.randint(0, 10)
+    burst = random.randint(1, 10)
+    print(f"Generated random arrival: {arrival}, burst: {burst}")
+    return jsonify({'arrival': arrival, 'burst': burst})
 
 
 if __name__ == '__main__':

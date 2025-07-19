@@ -14,21 +14,32 @@ def fifo(processes):
         completeTime = startTime + burst
         turnaroundTime = completeTime - arrival
         responseTime = startTime - arrival
+        waitingTime = turnaroundTime - burst
 
         stats.append({
             'pid': pid,
             'arrival': arrival,
             'burst': burst,
-            'executions': [{'start': startTime, 'duration': burst }],
+            'executions': [{'start': startTime, 'duration': burst}],
             'completeTime': completeTime,
             'turnaround': turnaroundTime,
-            'response': responseTime
+            'response': responseTime,
+            'waiting': waitingTime
         })
 
         events.append({'pid': pid, 'start': startTime, 'end': completeTime})
         current = completeTime
+    
+        totalTurnaroundTime = sum(p['turnaround'] for p in stats)
+        totalResponseTime = sum(p['response'] for p in stats)
+        totalWaitingTime = sum(p['waiting'] for p in stats)
+        averageMetrics = {
+            'averageTurnaroundTime': totalTurnaroundTime / len(stats),
+            'averageResponseTime': totalResponseTime / len(stats),
+            'averageWaitingTime': totalWaitingTime / len(stats)
+        }
 
-    return events, stats
+    return events, stats, averageMetrics
 
 
 def sjf(processes):
@@ -51,14 +62,19 @@ def sjf(processes):
             end = start + burst
             time = end
 
+            turnaround = end - arrival
+            response = start - arrival
+            waiting = turnaround - burst
+
             stats.append({
                 'pid': pid,
                 'arrival': arrival,
                 'burst': burst,
-                'executions': [{ 'start':burst, 'duration':end}],
+                'executions': [{'start': start, 'duration': burst}],
                 'completeTime': end,
-                'turnaround': end - arrival,
-                'response': start - arrival
+                'turnaround': turnaround,
+                'response': response,
+                'waiting': waiting
             })
 
             events.append({'pid': pid, 'start': start, 'end': end})
@@ -67,8 +83,18 @@ def sjf(processes):
             nextArrival = min(p['arrival'] for p in remaining)
             events.append({'pid': 'idle', 'start': time, 'end': nextArrival})
             time = nextArrival
+    
+        totalTurnaroundTime = sum(p['turnaround'] for p in stats)
+        totalResponseTime = sum(p['response'] for p in stats)
+        totalWaitingTime = sum(p['waiting'] for p in stats)
+        averageMetrics = {
+            'averageTurnaroundTime': totalTurnaroundTime / len(stats),
+            'averageResponseTime': totalResponseTime / len(stats),
+            'averageWaitingTime': totalWaitingTime / len(stats)
+        }
 
-    return events, stats
+    return events, stats, averageMetrics
+
 
 def srtf(processes):
     time = 0
@@ -79,7 +105,6 @@ def srtf(processes):
     finished = 0
     n = len(processes)
     arrived = []
-    ready = []
     current_process = None
     last_switch = 0
 
@@ -96,11 +121,7 @@ def srtf(processes):
 
             if current_process is None or current_process['pid'] != next_process['pid']:
                 if current_process:
-                    events.append({
-                        'pid': current_process['pid'],
-                        'start': last_switch,
-                        'end': time
-                    })
+                    events.append({'pid': current_process['pid'], 'start': last_switch, 'end': time})
                     execution_logs.setdefault(current_process['pid'], []).append({
                         'start': last_switch,
                         'duration': time - last_switch
@@ -114,36 +135,47 @@ def srtf(processes):
                         'pid': current_process['pid'],
                         'arrival': current_process['arrival'],
                         'burst': current_process['burst'],
-                        'executions': [],
+                        'executions': [{'start' : last_switch, 'end' : current_process}],
                         'completeTime': None,
                         'turnaround': None,
-                        'response': time - current_process['arrival']
+                        'response': time - current_process['arrival'],
+                        'waiting': None
                     }
 
             remaining[current_process['pid']] -= 1
             time += 1
 
             if remaining[current_process['pid']] == 0:
-                events.append({
-                    'pid': current_process['pid'],
-                    'start': last_switch,
-                    'end': time
-                })
+                events.append({'pid': current_process['pid'], 'start': last_switch, 'end': time})
                 execution_logs.setdefault(current_process['pid'], []).append({
                     'start': last_switch,
                     'duration': time - last_switch
                 })
-                stats_map[current_process['pid']]['completeTime'] = time
-                stats_map[current_process['pid']]['turnaround'] = time - current_process['arrival']
+
+                pid = current_process['pid']
+                stats_map[pid]['completeTime'] = time
+                stats_map[pid]['turnaround'] = time - current_process['arrival']
+                stats_map[pid]['waiting'] = stats_map[pid]['turnaround'] - stats_map[pid]['burst']
                 finished += 1
                 current_process = None
         else:
             time += 1
 
-    for pid, logs in execution_logs.items():
-        stats_map[pid]['executions'] = logs
+        for pid, logs in execution_logs.items():
+            stats_map[pid]['executions'] = logs
 
-    return events, list(stats_map.values())  
+    statList = list(stats_map.values())
+
+    totalTAT = sum(p['turnaround'] for p in statList)
+    totalRT = sum(p['response'] for p in statList)
+    totalWT = sum(p['waiting'] for p in statList)
+    averageMetrics = {
+        'averageTurnaroundTime': totalTAT / len(statList),
+        'averageResponseTime': totalRT / len(statList),
+        'averageWaitingTime': totalWT / len(statList)
+    }
+    return events, statList, averageMetrics
+
 
 def rr(processes, quantum=1):
     time = 0
@@ -156,12 +188,10 @@ def rr(processes, quantum=1):
     n = len(processes)
 
     while finished < n:
-        # Add processes arriving at current time
         for p in processes:
             if p['arrival'] == time:
                 arrived.append(p)
 
-        # Add to queue if not already in it and has remaining burst
         for p in arrived:
             if p['pid'] not in [q['pid'] for q in queue] and remaining[p['pid']] > 0:
                 queue.append(p)
@@ -184,16 +214,11 @@ def rr(processes, quantum=1):
             }
 
         execTime = min(quantum, burstLeft)
-        events.append({
-            'start': time,
-            'end': time + execTime,
-            'pid': pid
-        })
+        events.append({'start': time, 'end': time + execTime, 'pid': pid})
 
         time += execTime
         remaining[pid] -= execTime
 
-        # Add newly arrived processes during this time quantum
         for p in processes:
             if time - execTime < p['arrival'] <= time:
                 arrived.append(p)
@@ -203,20 +228,32 @@ def rr(processes, quantum=1):
         if remaining[pid] > 0:
             queue.append(current)
         else:
-            stats[pid]['executions'] = stats.get(pid, {}).get('executions', [])
             stats[pid]['completeTime'] = time
             stats[pid]['turnaround'] = time - arrival
             stats[pid]['response'] = stats[pid]['startTime'] - arrival
+            stats[pid]['waiting'] = stats[pid]['turnaround'] - stats[pid]['burst']
+
+        stats[pid]['executions'] = stats.get(pid, {}).get('executions', []) + \
+            [{'start': time - execTime, 'duration': execTime}]
+        if remaining[pid] == 0:
             finished += 1
 
-    # Finalize stats list in the correct order
-    stat_list = [stats[p['pid']] for p in processes]
-    return events, stat_list
+    statList = [stats[p['pid']] for p in processes]
+
+    totalTAT = sum(p['turnaround'] for p in statList)
+    totalRT = sum(p['response'] for p in statList)
+    totalWT = sum(p['waiting'] for p in statList)
+    averageMetrics = {
+         'averageTurnaroundTime': totalTAT / len(statList),
+         'averageResponseTime': totalRT / len(statList),
+         'averageWaitingTime': totalWT / len(statList)
+    }
+
+    return events, statList, averageMetrics
 
 
 def mlfq(processes, quantums, allotment):
     totalQueues = len(quantums)
-
     processes.sort(key=lambda p: p['arrival'])
     origBurst = {p['pid']: p['burst'] for p in processes}
     arrivalIndex = 0
@@ -226,7 +263,6 @@ def mlfq(processes, quantums, allotment):
     stats = {}
     queues = [[] for _ in range(totalQueues)]
     remaining = {p['pid']: p['burst'] for p in processes}
-    processMap = {p['pid']: p for p in processes}
     finished = 0
     n = len(processes)
 
@@ -251,16 +287,13 @@ def mlfq(processes, quantums, allotment):
                 'pid': pid,
                 'arrival': arrival,
                 'burst': origBurst[pid],
-                'startTime': time
+                'startTime': time,
+                'executions': []
             }
 
         runTime = min(quantums[queueLevel], burstLeft)
-
-        events.append({
-            'start': time,
-            'end': time + runTime,
-            'pid': pid
-        })
+        events.append({'start': time, 'end': time + runTime, 'pid': pid})
+        stats[pid]['executions'].append({'start': time, 'duration': runTime})
 
         time += runTime
         remaining[pid] -= runTime
@@ -280,8 +313,18 @@ def mlfq(processes, quantums, allotment):
             stats[pid]['completeTime'] = time
             stats[pid]['turnaround'] = time - arrival
             stats[pid]['response'] = stats[pid]['startTime'] - arrival
+            stats[pid]['waiting'] = stats[pid]['turnaround'] - stats[pid]['burst']
             finished += 1
 
-    stat_list = [stats[p['pid']] for p in processes]
-    return events, stat_list
-           
+    statList = [stats[p['pid']] for p in processes]
+    totalTAT = sum(p['turnaround'] for p in statList)
+    totalRT = sum(p['response'] for p in statList)
+    totalWT = sum(p['waiting'] for p in statList)
+    averageMetrics = {
+        'averageTurnaroundTime': totalTAT / len(statList),
+        'averageResponseTime': totalRT / len(statList),
+        'averageWaitingTime': totalWT / len(statList)
+    }
+
+    return events, statList, averageMetrics
+
