@@ -7,12 +7,20 @@ The simulator allows users to input or generate processes and simulate their exe
 
 <br>
 
+## **HOW TO RUN THE SIMULATOR ITSELF?** 
+Setup your Virtual Studio as follows:
+<br>
+
+<img width="1558" height="135" alt="Image" src="https://github.com/user-attachments/assets/90e94f06-7cae-4162-84b0-2008dfabd110" /> 
+<br>
+<br>
+
 ## **INSTRUCTIONS ON HOW TO RUN THE SIMULATION:**
 <img width="341" height="958" alt="Image" src="https://github.com/user-attachments/assets/52959f74-6517-426e-b4fd-1fbf0b1aead6" />
 
 ### **1. You can add processes by:**
-- Generating random values for each job by clicking on the “Generate Button.” Or,
-- Manually inputting values for each job by entering data inside the “Arrival Time” input field and the “Burst Time” input field. Then, submit that data by clicking on the “Save” button to create a job. <br>
+- Generating random values for each job by clicking on the **“Generate Button.”** Or,
+- Manually inputting values for each job by entering data inside the **“Arrival Time”** input field and the** “Burst Time”** input field. Then, submit that data by clicking on the **“Save”** button to create a job. <br>
 
 
 ### **2. You can add Quantum time / Allotment time (for either RR/MLFQ) by:**
