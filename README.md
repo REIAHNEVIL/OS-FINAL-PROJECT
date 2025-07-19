@@ -1,3 +1,5 @@
+# **OS PROJECT 1 - CPU SCHEDULING VISUALIZATION**
+
 ## **PROJECT OVERVIEW:**
 This project is a CPU Scheduling Simulator designed to help users visualize and understand how various scheduling algorithms manage processes in an operating system. It combines a Python-based backend using Flask with a responsive frontend built using HTML, JavaScript, and CSS.
 
@@ -33,7 +35,7 @@ The simulator allows users to input or generate processes and simulate their exe
 
 
 ## **KNOWN BUGS, LIMITATIONS, OR INCOMPLETE FEATURES:**
-
+- Clear button does not include the Average Metrics display.
 
 ## **MEMBER CONTRIBUTIONS:**
 
