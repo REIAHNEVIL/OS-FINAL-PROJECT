@@ -19,14 +19,15 @@
         <div class="yellowBox"> </div>
         <form id="processForm">
 
-            <label style="color:white;">Process ID:</label>
-            <input type="text" name="pid" required>
+            <div class="form-group" style="margin-bottom: 10px;">
+                <button id="generateRandom" type="button" style="background-color: #AF1BAA; color: white; border: none; padding: 5px 15px; border-radius: 5px;">Generate Random</button>
+            </div>
 
             <label style="color:white;">Arrival Time:</label>
-            <input type="number" name="arrival" required>
+            <input type="number" name="arrival" id="arrivalInput" required>
 
             <label style="color:white;">Burst Time:</label>
-            <input type="number" name="burst" required>
+            <input type="number" name="burst" id="burstInput" required>
 
             <div class="form-buttons">
                 <button type="submit" style="color:white">Save</button>
@@ -41,15 +42,14 @@
                 <label style="color:white;">Allotment:</label>
                 <input type="number" name="allotment" id="allotment">
 
-                <button id="addTime" type ="button"style="margin-top: 10px; border-radius: 10px; height: 30px; background-color: #AF1BAA; color: white;">Add Conditions</button>
+                <button id="addTime" type="button" style="margin-top: 10px; border-radius: 10px; height: 30px; background-color: #AF1BAA; color: white;">Add Conditions</button>
             </div>
 
         </form>
     </div>
 
 
-
-    <table style="margin-top:105px; border:1px solid white; ">
+    <table class="table" style="margin-top:105px; border:1px solid white; max-height:200px; overflow-y:auto;">
         <thead>
             <tr>
                 <th>PID</th>
@@ -59,6 +59,7 @@
                 <th>Completion</th>
                 <th>Turnaround</th>
                 <th>Response</th>
+                <th>Waiting</th>
             </tr>
         </thead>
         <tbody id="resultsTableBody"></tbody>
@@ -67,6 +68,9 @@
         </tr>
 
     </table>
+
+
+
 
     <div class="controls">
         <label for="algorithm">Choose Scheduler Algorithm</label>
@@ -82,11 +86,20 @@
         <button onclick="clearProcesses()">Clear</button>
     </div>
 
-
     <div class="gantt-container">
-        <h2>Gantt Chart</h2> 
-        <div id="quantumInfo" style="color: white; margin-bottom: 10px;"></div>
-        <div id="ganttChart"></div>
+        <div class="stats">
+            <h2>Gantt Chart</h2>
+        </div>
+
+        <div class="scrollWrapper">
+            <div id="ganttChart"></div>
+        </div>
+
+    </div>
+
+    <div class="metrics" style="border:white solid 1px;">
+        <span>Average Metrics:</span>
+        <div id="averageMetrics"></div>
     </div>
 
 
