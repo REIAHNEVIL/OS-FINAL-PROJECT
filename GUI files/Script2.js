@@ -26,8 +26,21 @@ document.getElementById('processForm').addEventListener('submit', function (e) {
                 <td>-</td>
             `;
             tableBody.appendChild(newRow);
+            document.getElementById('averageMetrics').innerHTML = '';
+
         });
 });
+
+document.getElementById('generateRandom').addEventListener('click', function () {
+    fetch('/generate_random')
+        .then(res => res.json())
+        .then(data => {
+            console.log('Generated random values:', data);
+            document.getElementById('arrivalInput').value = data.arrival;
+            document.getElementById('burstInput').value = data.burst;
+        });
+});
+
 
 document.getElementById('addTime').addEventListener('click', function () {
     const algorithm = document.getElementById('algorithm').value;
@@ -54,8 +67,6 @@ document.getElementById('addTime').addEventListener('click', function () {
 
 function runScheduler() {
     const algorithm = document.getElementById('algorithm').value;
-
-    // Prefer values from the new container first
     const quantum = document.getElementById('newTimeSlice')?.value || document.getElementById('timeSlice')?.value;
     const allotment = document.getElementById('newAllotment')?.value || document.getElementById('allotment')?.value;
 
@@ -80,7 +91,7 @@ function runScheduler() {
         return;
     }
     if (algorithm === 'SJF' || algorithm === 'FCFS') {
-        url += `&quantum=0`; // Ensure quantum is set to 0 for SJF and FCFS
+        url += `&quantum=0`; 
     }
 
     fetch(url)
@@ -88,11 +99,19 @@ function runScheduler() {
         .then(data => {
             updateResultsTable(data.stats);
             drawGanttChart(data.events);
+            displayAverageMetrics(data.averageMetrics);
 
-            document.getElementById('quantumInfo').innerText =
-                (algorithm === 'RR' && quantum)
-                    ? `Quantum Time Slice: ${quantum}`
-                    : '';
+            const quantumInfo = document.getElementById('quantumInfo');
+            const allotmentInfo = document.getElementById('allotmentInfo'); 
+
+            if (algorithm == RR) {
+                quantumInfo.innerText = `Quantum Time Slice: ${quantum}`;
+                timeSlice.innerText = '';
+            } else if (algorithm == MLFQ) {
+                quantumInfo.innerText = `Quantum Time Slice: ${quantum}`;
+                allotmentInfo.innerText = `Allotment Time: ${allotment}`;
+            }
+
         });
 }
 
@@ -100,7 +119,7 @@ function runScheduler() {
 
 function updateResultsTable(stats) {
     const tableBody = document.getElementById('resultsTableBody');
-    tableBody.innerHTML = ''; // Clear old rows
+    tableBody.innerHTML = ''; 
 
     stats.forEach((proc) => {
         const row = document.createElement('tr');
@@ -111,13 +130,13 @@ function updateResultsTable(stats) {
             <td>
                 <div class="progressContainer">
                     <div class="progressBar" id="progress-${proc.pid}">
-                        <span id="progress-text-${proc.pid}" class="progress-label"></span>
                     </div>
                 </div>
             </td>
             <td>${proc.completeTime ?? '-'}</td>
             <td>${proc.turnaround ?? '-'}</td>
             <td>${proc.response ?? '-'}</td>
+            <td>${proc.waiting ?? '-'}</td>
         `;
         tableBody.appendChild(row);
 
@@ -152,7 +171,7 @@ function drawGanttChart(events) {
     const chart = document.getElementById('ganttChart');
     const pid = String(events.pid);
 
-    chart.innerHTML = ''; // Clear previous chart
+    chart.innerHTML = ''; 
 
     const colors = ['#4caf50', '#2196f3', '#ff9800', '#e91e63', '#9c27b0', '#00bcd4', '#8bc34a'];
     const pidColorMap = {};
@@ -188,6 +207,17 @@ function drawGanttChart(events) {
     });
 }
 
+function displayAverageMetrics(averageMetrics) {
+    const average = document.getElementById('averageMetrics');
+    average.style.display = 'flex';
+    average.style.gap = '20px';
+    console.log('Average Metrics:', averageMetrics);
+    average.innerHTML = `
+        <p>Average Turnaround Time: ${averageMetrics.averageTurnaroundTime.toFixed(2)}</p>
+        <p>Average Waiting Time: ${averageMetrics.averageWaitingTime.toFixed(2)}</p>
+        <p>Average Response Time: ${averageMetrics.averageResponseTime.toFixed(2)}</p>
+    `;
+}
 
 function clearProcesses() {
     fetch('/clear', { method: 'POST' })
@@ -195,8 +225,9 @@ function clearProcesses() {
         .then(() => {
             document.getElementById('resultsTableBody').innerHTML = '';
             document.getElementById('ganttChart').innerHTML = '';
-            doocument.getElementById('quantumInfo').innerText = '';
-            document.getElementByID('timeSlice').value = '';
+            document.getElementById('quantumInfo').innerText = '';
+            document.getElementById('timeSlice').value = '';
             document.getElementById('allotment').value = '';
+            document.getElementById('averageMetrics').innerHTML = '';
         });
 }

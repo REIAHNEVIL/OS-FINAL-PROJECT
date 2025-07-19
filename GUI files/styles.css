@@ -58,6 +58,8 @@ h2 {
     border-radius: 4px;
 }
 
+
+
 .form-container {
     width: 269px;
     height: 1204px;
@@ -120,40 +122,42 @@ h2 {
     }
 
 
-
-table {
+.table {
     width: 110%;
-    border-collapse: separate;
+    height:200px;
+    border-collapse: collapse;
     border-radius: 10px;
     width: 1020px;
-    height: 48px;
     flex-shrink: 0;
     color: white;
-    font-weight:100;
+    font-weight: 100;
     font-family: Arial, sans-serif;
     margin-top: -200px;
     margin-left: 350px;
-    min-height: 200px;
     background: linear-gradient(180deg, #0E001F 0%, #6D0C83 100%);
-   
 }
 
-    table td {
+
+    .table td {
         border-collapse: collapse;
         padding: 10px;
         text-align: center;
         border-radius: 5px;
         border-right: 1px solid white;
     }
+ 
+    .table tbody {
+        overflow-y:auto;
+    }
 
-    table th {
+    .table th {
         
         border: 2px solid white;
         padding: 10px;
         color: white;
         text-align: center;
         border-radius: 5px;
-        background-color: #19052C; /* slightly lighter purple for header */
+        background-color: #19052C; 
         font-weight: bold;
         border-radius: 5px;
         border-color: #12F7FF;
@@ -253,18 +257,20 @@ table {
 
 #ganttChart {
     min-height: 100px;
-    margin-top: 10px;
+    margin-top: 5px;
     background-color: #0E001F;
     border-radius: 5px;
     padding: 10px;
-    display: flex;
+    display: inline-flex;
+    min-width:max-content;
     gap: 5px;
     color: white;
     font-family: Arial, sans-serif;
 }
 
 .gantt-block {
-    display: flex;
+    flex-direction:column;
+    display:flex;
     justify-content: center; /* center horizontally */
     align-items: center; /* center vertically */
     min-width: 60px;
@@ -274,6 +280,13 @@ table {
     font-weight: bold;
     text-align: center;
     border: thin solid #ffffff; /* white border */
+}
+
+.scrollWrapper {
+    margin-top: -20px;
+    overflow-x: auto;
+    overflow-y: hidden;
+    width: 100%;
 }
 
 input:disabled {
@@ -313,3 +326,19 @@ input:disabled {
         font-weight:bold;
         border:none;
     }
+
+    .stats{
+        display: flex;
+        gap: 50px;
+    }
+
+    .metrics{
+        display:flex;
+        margin-left: 350px;
+        margin-top: 30px;
+        border-radius:10px;
+        width:1000px;
+        height: 80px;
+        color: white;
+    }
+  
