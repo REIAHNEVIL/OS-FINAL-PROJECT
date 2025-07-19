@@ -1,0 +1,95 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>CPU Scheduler Simulation</title>
+    <link rel="stylesheet" href="/static/styles.css">
+</head>
+<body>
+
+    <div style="width: 100%; margin-top: 60px;">
+        <h1 class="title" style="color: white; margin-left: 345px;">CPU SCHEDULER SIMULATION</h1>
+        <div style="border-bottom: 2px solid white; width: 1020px; margin-top: -150px; margin-left:347px; margin-bottom:-70px;"></div>
+    </div>
+
+
+
+    <div class="form-container">
+        <h2 style="margin-top: 90px;">INPUT</h2>
+        <div class="yellowBox"> </div>
+        <form id="processForm">
+
+            <label style="color:white;">Process ID:</label>
+            <input type="text" name="pid" required>
+
+            <label style="color:white;">Arrival Time:</label>
+            <input type="number" name="arrival" required>
+
+            <label style="color:white;">Burst Time:</label>
+            <input type="number" name="burst" required>
+
+            <div class="form-buttons">
+                <button type="submit" style="color:white">Save</button>
+                <button type="reset" style="color:white">Clear</button>
+            </div>
+
+
+            <div class="timeConfiguration" style="border:white solid 1px; margin-top:25px; width:195px; margin-left: -20px; height: 230px; ">
+                <label style="color:white;">Time Slice:</label>
+                <input type="number" name="slice" id="timeSlice">
+
+                <label style="color:white;">Allotment:</label>
+                <input type="number" name="allotment" id="allotment">
+
+                <button id="addTime" type ="button"style="margin-top: 10px; border-radius: 10px; height: 30px; background-color: #AF1BAA; color: white;">Add Conditions</button>
+            </div>
+
+        </form>
+    </div>
+
+
+
+    <table style="margin-top:105px; border:1px solid white; ">
+        <thead>
+            <tr>
+                <th>PID</th>
+                <th>Arrival</th>
+                <th>Burst</th>
+                <th>Status</th>
+                <th>Completion</th>
+                <th>Turnaround</th>
+                <th>Response</th>
+            </tr>
+        </thead>
+        <tbody id="resultsTableBody"></tbody>
+        <tr>
+            <td colspan="7" style="text-align: center;"></td>
+        </tr>
+
+    </table>
+
+    <div class="controls">
+        <label for="algorithm">Choose Scheduler Algorithm</label>
+        <select id="algorithm">
+            <option value="FIFO"> First In First Out (FIFO)</option>
+            <option value="SJF"> Shortest Job First (SJF)</option>
+            <option value="SRTF"> Shortest Run Time First (SRTF)</option>
+            <option value="RR"> Round Robin (RR)</option>
+            <option value="MLFQ"> Multi-Level Feedback Queue (MLFQ)</option>
+        </select>
+
+        <button type="button" onclick="runScheduler()">Run</button>
+        <button onclick="clearProcesses()">Clear</button>
+    </div>
+
+
+    <div class="gantt-container">
+        <h2>Gantt Chart</h2> 
+        <div id="quantumInfo" style="color: white; margin-bottom: 10px;"></div>
+        <div id="ganttChart"></div>
+    </div>
+
+
+    <script src="/static/Script2.js"></script>
+</body>
+</html>
