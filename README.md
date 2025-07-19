@@ -7,7 +7,25 @@ The simulator allows users to input or generate processes and simulate their exe
 
 
 ## **INSTRUCTIONS ON HOW TO RUN THE SIMULATION:**
+### **You can add processes by:**
+- Generating random values for each job by clicking on the “Generate Button.” Or,
+- Manually inputting values for each job by entering data inside the “Arrival Time” input field and the “Burst Time” input field. Then, submit that data by clicking on the “Save” button to create a job. 
 
+### **You can add Quantum time / Allotment time (for either RR/MLFQ) by:**
+- Manually input value for quantum slice in **“Time Slice”** input field and submit this data by clicking on the **“Add Conditions”** button.
+- Manually input value for allotment time in the **“Allotment”** input field and submit this data by clicking on the **“Add Conditions”** button.
+- **_In MLFQ:_** Input values in **both input fields** and then click on the **“Add Conditions”** button.
+
+### **You can remove processes by:**
+- Clicking on the **“Clear”** button that erases data within the input fields.
+  
+### **You can select which algorithm to use by:**
+- Using the dropdown menu to select the algorithm.
+- Clicking on the **“Run”** button, this starts the process of the scheduler.
+
+### **You can remove all processes and data from the simulator by:**
+- Clicking on the **“Clear”** button found beside the “Run” button.
+  
 
 ## **SCHEDULING ALGORITHMS USED IN THIS SIMULATION:**
 **1. FIFO (First-In-First-Out)**
