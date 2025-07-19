@@ -256,19 +256,16 @@ def mlfq(processes):
         print("Invalid input. Setting number of queues to default (4).")
         totalQueues = 4
 
-    print("\nConfigure time quantum and allotments for each level:")
-    queueQuantum = []
-    allotments = []
-    for i in range(totalQueues):
-        try:
-            q = int(input(f"  TIME QUANTUM for Q{i} (default 1): ") or 1)
-            a = int(input(f"  ALLOTMENT for Q{i} (default 1): ") or 1)
-        except ValueError:
-            print(f"[INVALID INPUT] for Q{i}. Using default values (1).")
-            q, a = 1, 1
-        queueQuantum.append(q)
-        allotments.append(a)
-    
+    try:
+        unifiedQuantum = int(input("Enter TIME QUANTUM for all queues (default 1): ") or 1)
+        unifiedAllotment = int(input("Enter TIME ALLOTMENT for all queues (default 1): ") or 1)
+    except ValueError:
+        print("Invalid input. Using default values (1).")
+        unifiedQuantum = unifiedAllotment = 1
+
+    queueQuantum = [unifiedQuantum] * totalQueues
+    allotments = [unifiedAllotment] * totalQueues
+
     processes.sort(key=lambda p: p['arrival'])
     origBurst = {p['pid']: p['burst'] for p in processes}
     arrivalIndex = 0
@@ -294,7 +291,6 @@ def mlfq(processes):
             time += 1
             continue
 
-
         current = queues[queueLevel].pop(0)
         pid = current['pid']
         arrival = current['arrival']
@@ -306,9 +302,6 @@ def mlfq(processes):
                 'burst': origBurst[pid],
                 'startTime': time
             }
-
-            if 'startTime' not in stats[pid]:
-                stats[pid]['startTime'] = time
 
         quantum = queueQuantum[queueLevel]
         runTime = min(quantum, burstLeft)
@@ -327,7 +320,6 @@ def mlfq(processes):
                 queues[queueLevel + 1].append(current)
             else:
                 queues[queueLevel].append(current)
-
         else:
             stats[pid]['completeTime'] = time
             stats[pid]['turnaround'] = time - arrival
