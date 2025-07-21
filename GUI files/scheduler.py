@@ -84,13 +84,13 @@ def sjf(processes):
             events.append({'pid': 'idle', 'start': time, 'end': nextArrival})
             time = nextArrival
     
-        totalTurnaroundTime = sum(p['turnaround'] for p in stats)
-        totalResponseTime = sum(p['response'] for p in stats)
-        totalWaitingTime = sum(p['waiting'] for p in stats)
-        averageMetrics = {
-            'averageTurnaroundTime': totalTurnaroundTime / len(stats),
-            'averageResponseTime': totalResponseTime / len(stats),
-            'averageWaitingTime': totalWaitingTime / len(stats)
+    totalTurnaroundTime = sum(p['turnaround'] for p in stats)
+    totalResponseTime = sum(p['response'] for p in stats)
+    totalWaitingTime = sum(p['waiting'] for p in stats)
+    averageMetrics = {
+         'averageTurnaroundTime': totalTurnaroundTime / len(stats),
+         'averageResponseTime': totalResponseTime / len(stats),
+         'averageWaitingTime': totalWaitingTime / len(stats)
         }
 
     return events, stats, averageMetrics
@@ -159,6 +159,7 @@ def srtf(processes):
                 finished += 1
                 current_process = None
         else:
+            events.append({'pid': 'idle', 'start': time, 'end': time + 1})
             time += 1
 
         for pid, logs in execution_logs.items():
@@ -197,6 +198,7 @@ def rr(processes, quantum=1):
                 queue.append(p)
 
         if not queue:
+            events.append({'pid': 'idle', 'start': time, 'end': time + 1})
             time += 1
             continue
 
@@ -252,32 +254,49 @@ def rr(processes, quantum=1):
     return events, statList, averageMetrics
 
 
-def mlfq(processes, quantums, allotment):
+def mlfq(processes, quantums, allotments):
     totalQueues = len(quantums)
     processes.sort(key=lambda p: p['arrival'])
-    origBurst = {p['pid']: p['burst'] for p in processes}
-    arrivalIndex = 0
-    allotmentUsed = {p['pid']: 0 for p in processes}
+
     time = 0
+    finished = 0
+    n = len(processes)
     events = []
     stats = {}
     queues = [[] for _ in range(totalQueues)]
+
+    origBurst = {p['pid']: p['burst'] for p in processes}
     remaining = {p['pid']: p['burst'] for p in processes}
-    finished = 0
-    n = len(processes)
+    allotmentUsed = {p['pid']: 0 for p in processes}
+    arrivalIndex = 0
+
+    while arrivalIndex < n and processes[arrivalIndex]['arrival'] <= time:
+        queues[0].append((processes[arrivalIndex], 0))
+        arrivalIndex += 1
 
     while finished < n:
-        while arrivalIndex < n and processes[arrivalIndex]['arrival'] <= time:
-            queues[0].append(processes[arrivalIndex])
-            arrivalIndex += 1
+        current = None
+        queueLevel = None
 
-        queueLevel = next((i for i, q in enumerate(queues) if q), None)
+        for i, q in enumerate(queues):
+            if q:
+                current, queueLevel = q.pop(0)
+                break
 
-        if queueLevel is None:
+        if current is None:
+            events.append({
+                'start': time,
+                'end': time + 1,
+                'pid': 'idle',
+                'queueLevel': None
+            })
             time += 1
+
+            while arrivalIndex < n and processes[arrivalIndex]['arrival'] <= time:
+                queues[0].append((processes[arrivalIndex], 0))
+                arrivalIndex += 1
             continue
 
-        current = queues[queueLevel].pop(0)
         pid = current['pid']
         arrival = current['arrival']
         burstLeft = remaining[pid]
@@ -291,24 +310,38 @@ def mlfq(processes, quantums, allotment):
                 'executions': []
             }
 
-        runTime = min(quantums[queueLevel], burstLeft)
-        events.append({'start': time, 'end': time + runTime, 'pid': pid, 'queue': queueLevel})
+        print(f"Time {time}: PID {pid} is selected from Queue Level Q{queueLevel}")
+
+
+        quantum = quantums[queueLevel]
+        runTime = min(quantum, burstLeft)
+
+        events.append({
+            'start': time,
+            'end': time + runTime,
+            'pid': pid,
+            'queueLevel': queueLevel
+        })
         stats[pid]['executions'].append({'start': time, 'duration': runTime})
 
         time += runTime
         remaining[pid] -= runTime
 
         while arrivalIndex < n and processes[arrivalIndex]['arrival'] <= time:
-            queues[0].append(processes[arrivalIndex])
+            queues[0].append((processes[arrivalIndex], 0))
             arrivalIndex += 1
 
         if remaining[pid] > 0:
-            allotmentUsed[pid] += 1
-            if allotmentUsed[pid] >= allotment[queueLevel] and queueLevel < totalQueues - 1:
-                allotmentUsed[pid] = 0
-                queues[queueLevel + 1].append(current)
+            allotmentUsed[pid] += runTime
+            if allotmentUsed[pid] >= quantum * allotments[queueLevel]:
+                if queueLevel < totalQueues - 1:
+                    queues[queueLevel + 1].append((current, queueLevel + 1))
+                    allotmentUsed[pid] = 0
+                else:
+                    queues[queueLevel].append((current, queueLevel)) 
             else:
-                queues[queueLevel].append(current)
+                queues[queueLevel].append((current, queueLevel)) 
+
         else:
             stats[pid]['completeTime'] = time
             stats[pid]['turnaround'] = time - arrival
@@ -320,6 +353,7 @@ def mlfq(processes, quantums, allotment):
     totalTAT = sum(p['turnaround'] for p in statList)
     totalRT = sum(p['response'] for p in statList)
     totalWT = sum(p['waiting'] for p in statList)
+
     averageMetrics = {
         'averageTurnaroundTime': totalTAT / len(statList),
         'averageResponseTime': totalRT / len(statList),
@@ -327,4 +361,3 @@ def mlfq(processes, quantums, allotment):
     }
 
     return events, statList, averageMetrics
-

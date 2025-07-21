@@ -132,6 +132,7 @@ function runScheduler() {
             displayAverageMetrics(data.averageMetrics);
         });
 
+
 }
 
 
@@ -185,10 +186,9 @@ function updateResultsTable(stats) {
         }
     });
 }
-
 function drawGanttChart(events) {
     const chart = document.getElementById('ganttChart');
-    chart.innerHTML = ''; // Clear previous chart
+    chart.innerHTML = '';
 
     const colors = ['#4caf50', '#2196f3', '#ff9800', '#e91e63', '#9c27b0', '#00bcd4', '#8bc34a'];
     const pidColorMap = {};
@@ -201,6 +201,8 @@ function drawGanttChart(events) {
     const totalTime = maxEnd - minStart;
     const chartPixelWidth = 983;
     const pixelsPerUnit = chartPixelWidth / totalTime;
+
+    let lastEndTime = null;
 
     events.forEach((event, index) => {
         const duration = event.end - event.start;
@@ -218,12 +220,11 @@ function drawGanttChart(events) {
         block.style.padding = '2px';
         block.style.position = 'relative';
 
-       
         if (event.pid === 'idle') {
             block.innerText = 'Idle';
         } else {
-            block.innerText = event.queue !== undefined
-                ? `P${event.pid} (Q${event.queue})`
+            block.innerText = event.queueLevel !== undefined
+                ? `P${event.pid} (Q${event.queueLevel})`
                 : `P${event.pid}`;
         }
 
@@ -235,7 +236,11 @@ function drawGanttChart(events) {
         timeLabel.style.width = '100%';
         timeLabel.style.display = 'flex';
         timeLabel.style.justifyContent = 'space-between';
-        timeLabel.innerHTML = `<span>${event.start}</span><span>${event.end}</span>`;
+
+        const startLabel = (lastEndTime !== event.start) ? `<span>${event.start}</span>` : `<span></span>`;
+        timeLabel.innerHTML = `${startLabel}<span>${event.end}</span>`;
+
+        lastEndTime = event.end;
 
         block.appendChild(timeLabel);
         chart.appendChild(block);
@@ -259,7 +264,6 @@ function displayAverageMetrics(averageMetrics) {
 function extractResults() {
     const tableBody = document.getElementById('resultsTableBody');
 
-    // Check if there are any result rows (excluding header)
     if (!tableBody || tableBody.rows.length === 0) {
         alert("No results available to extract.");
         return;

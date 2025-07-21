@@ -1,3 +1,4 @@
+from queue import Empty
 from flask import Flask, render_template, request, jsonify
 from scheduler import fifo, sjf, srtf, rr, mlfq
 
@@ -54,6 +55,7 @@ def set_conditions():
 
 @app.route('/run_scheduler', methods=['GET'])
 def run_scheduler():
+    global process_list
     algorithm = request.args.get('algorithm')
     print("Running scheduler with algorithm:", algorithm) 
 
@@ -103,6 +105,7 @@ def generate_random():
 @app.route('/extract_results', methods=['POST'])
 def extract_results():
     data = request.get_json()
+
 
     stats = data.get('stats', [])
     events = data.get('events', [])
