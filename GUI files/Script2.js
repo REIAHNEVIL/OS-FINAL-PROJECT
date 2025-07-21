@@ -169,9 +169,7 @@ function updateResultsTable(stats) {
 
 function drawGanttChart(events) {
     const chart = document.getElementById('ganttChart');
-    const pid = String(events.pid);
-
-    chart.innerHTML = ''; 
+    chart.innerHTML = ''; // Clear previous chart
 
     const colors = ['#4caf50', '#2196f3', '#ff9800', '#e91e63', '#9c27b0', '#00bcd4', '#8bc34a'];
     const pidColorMap = {};
@@ -185,27 +183,47 @@ function drawGanttChart(events) {
     const chartPixelWidth = 983;
     const pixelsPerUnit = chartPixelWidth / totalTime;
 
-    events.forEach(event => {
+    events.forEach((event, index) => {
         const duration = event.end - event.start;
         if (duration <= 0) return;
 
         const block = document.createElement('div');
         block.className = 'gantt-block';
         block.style.width = `${duration * pixelsPerUnit}px`;
+        block.style.backgroundColor = event.pid === 'idle' ? '#555' : (
+            pidColorMap[event.pid] ?? (pidColorMap[event.pid] = colors[colorIndex++ % colors.length])
+        );
+        block.style.color = 'white';
+        block.style.fontSize = '10px';
+        block.style.textAlign = 'center';
+        block.style.padding = '2px';
+        block.style.position = 'relative';
 
-        const pid = event.pid;
-
-        if (!pidColorMap[pid]) {
-            pidColorMap[pid] = colors[colorIndex % colors.length];
-            colorIndex++;
+       
+        if (event.pid === 'idle') {
+            block.innerText = 'Idle';
+        } else {
+            block.innerText = event.queue !== undefined
+                ? `P${event.pid} (Q${event.queue})`
+                : `P${event.pid}`;
         }
 
-        block.style.backgroundColor = pid === 'idle' ? '#555' : pidColorMap[pid];
-        block.innerText = pid === 'idle' ? 'Idle' : `P${pid}`;
+        const timeLabel = document.createElement('div');
+        timeLabel.style.position = 'absolute';
+        timeLabel.style.bottom = '-16px';
+        timeLabel.style.left = '0';
+        timeLabel.style.fontSize = '14px';
+        timeLabel.style.width = '100%';
+        timeLabel.style.display = 'flex';
+        timeLabel.style.justifyContent = 'space-between';
+        timeLabel.innerHTML = `<span>${event.start}</span><span>${event.end}</span>`;
 
+        block.appendChild(timeLabel);
         chart.appendChild(block);
     });
 }
+
+
 
 function displayAverageMetrics(averageMetrics) {
     const average = document.getElementById('averageMetrics');

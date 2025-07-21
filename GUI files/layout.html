@@ -19,8 +19,8 @@
         <div class="yellowBox"> </div>
         <form id="processForm">
 
-            <div class="form-group" style="margin-bottom: 10px;">
-                <button id="generateRandom" type="button" style="background-color: #AF1BAA; color: white; border: none; padding: 5px 15px; border-radius: 5px;">Generate Random</button>
+            <div class="form-group" style="margin-bottom: 10px; align-content:center;">
+                <button id="generateRandom" type="button" style="background-color: #AF1BAA; color: white; border: none; padding: 5px 15px; border-radius: 5px; font-weight:bold;">Generate Random</button>
             </div>
 
             <label style="color:white;">Arrival Time:</label>
@@ -77,7 +77,7 @@
         <select id="algorithm">
             <option value="FIFO"> First In First Out (FIFO)</option>
             <option value="SJF"> Shortest Job First (SJF)</option>
-            <option value="SRTF"> Shortest Run Time First (SRTF)</option>
+            <option value="SRTF"> Shortest Remaining Time First (SRTF)</option>
             <option value="RR"> Round Robin (RR)</option>
             <option value="MLFQ"> Multi-Level Feedback Queue (MLFQ)</option>
         </select>
@@ -98,8 +98,8 @@
     </div>
 
     <div class="metrics" style="border:white solid 1px;">
-        <span>Average Metrics:</span>
-        <div id="averageMetrics"></div>
+        <span style="font-weight:bold; margin-left:20px; margin-top:10px;">Average Metrics:</span>
+        <div id="averageMetrics" style="margin-top:20px;"></div>
     </div>
 
 

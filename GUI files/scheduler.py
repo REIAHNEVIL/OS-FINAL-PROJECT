@@ -292,7 +292,7 @@ def mlfq(processes, quantums, allotment):
             }
 
         runTime = min(quantums[queueLevel], burstLeft)
-        events.append({'start': time, 'end': time + runTime, 'pid': pid})
+        events.append({'start': time, 'end': time + runTime, 'pid': pid, 'queue': queueLevel})
         stats[pid]['executions'].append({'start': time, 'duration': runTime})
 
         time += runTime

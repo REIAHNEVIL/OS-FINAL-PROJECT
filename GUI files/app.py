@@ -11,7 +11,7 @@ def index():
 @app.route('/add_process', methods=['POST'])
 def add_process():
     data = request.get_json()
-    print("Received data from frontend:", data)  # Debugging line
+    print("Received data from frontend:", data) 
 
     try:
         arrival = int(data.get('arrival'))
@@ -26,7 +26,7 @@ def add_process():
         'burst': burst
     }
     process_list.append(process)
-    print("Updated process list:", process_list)  # Debugging line
+    print("Updated process list:", process_list)  
 
     return jsonify({'status': 'success', 'processes': process_list})
 
@@ -55,7 +55,7 @@ def set_conditions():
 @app.route('/run_scheduler', methods=['GET'])
 def run_scheduler():
     algorithm = request.args.get('algorithm')
-    print("Running scheduler with algorithm:", algorithm)  # Debugging line
+    print("Running scheduler with algorithm:", algorithm) 
 
     if algorithm == 'FIFO':
         events, stats, averageMetrics = fifo(process_list)
@@ -87,10 +87,10 @@ def run_scheduler():
 def clear():
     global process_list
     process_list = []
-    print("Process list cleared.")  # Debugging line
+    print("Process list cleared.")  
     return jsonify({'status': 'cleared'})
 
-import random  # Add this at the top if not already imported
+import random  
 
 @app.route('/generate_random', methods=['GET'])
 def generate_random():
