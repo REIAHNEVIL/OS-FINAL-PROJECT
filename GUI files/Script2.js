@@ -119,6 +119,7 @@ function runScheduler() {
 
         });
 
+
     fetch(url)
         .then(res => res.json())
         .then(data => {
@@ -256,6 +257,14 @@ function displayAverageMetrics(averageMetrics) {
 }
 
 function extractResults() {
+    const tableBody = document.getElementById('resultsTableBody');
+
+    // Check if there are any result rows (excluding header)
+    if (!tableBody || tableBody.rows.length === 0) {
+        alert("No results available to extract.");
+        return;
+    }
+
     fetch('/extract_results', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -274,8 +283,6 @@ function extractResults() {
         })
         .catch(err => console.error('Extract failed:', err));
 }
-
- 
 
 function clearProcesses() {
     fetch('/clear', { method: 'POST' })
