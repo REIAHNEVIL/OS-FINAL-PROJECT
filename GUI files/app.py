@@ -100,5 +100,43 @@ def generate_random():
     return jsonify({'arrival': arrival, 'burst': burst})
 
 
+@app.route('/extract_results', methods=['POST'])
+def extract_results():
+    data = request.get_json()
+
+    stats = data.get('stats', [])
+    events = data.get('events', [])
+    averages = data.get('averageMetrics', {})
+
+    lines = []
+
+    lines.append("Process Stats:")
+    for proc in stats:
+        lines.append(
+            f"P{proc['pid']} | Arrival: {proc['arrival']}, Burst: {proc['burst']}, "
+            f"Complete: {proc.get('completeTime', '-')}, TAT: {proc.get('turnaround', '-')}, "
+            f"WT: {proc.get('waiting', '-')}, RT: {proc.get('response', '-')}"
+        )
+
+    lines.append("\nGantt Chart Events:")
+    for ev in events:
+        q = f"Q{ev['queue']}" if 'queue' in ev else ''
+        lines.append(f"{ev['start']} to {ev['end']}: P{ev['pid']} {q}".strip())
+
+    lines.append("\nAverage Metrics:")
+    lines.append(f"Average Turnaround Time: {averages.get('averageTurnaroundTime', 0):.2f}")
+    lines.append(f"Average Waiting Time: {averages.get('averageWaitingTime', 0):.2f}")
+    lines.append(f"Average Response Time: {averages.get('averageResponseTime', 0):.2f}")
+
+    file_path = os.path.join("static", "results.txt")
+    with open(file_path, "w") as f:
+        f.write("\n".join(lines))
+
+    return jsonify({"url": f"/static/results.txt"})
+import os
+
+
+
+
 if __name__ == '__main__':
     app.run(debug=True)

@@ -1,3 +1,8 @@
+let lastStats = [];
+let lastEvents = [];
+let lastAverageMetrics = {};
+
+
 document.getElementById('processForm').addEventListener('submit', function (e) {
     e.preventDefault();
     const formData = new FormData(e.target);
@@ -113,6 +118,19 @@ function runScheduler() {
             }
 
         });
+
+    fetch(url)
+        .then(res => res.json())
+        .then(data => {
+            lastStats = data.stats;
+            lastEvents = data.events;
+            lastAverageMetrics = data.averageMetrics;
+
+            updateResultsTable(data.stats);
+            drawGanttChart(data.events);
+            displayAverageMetrics(data.averageMetrics);
+        });
+
 }
 
 
@@ -236,6 +254,28 @@ function displayAverageMetrics(averageMetrics) {
         <p>Average Response Time: ${averageMetrics.averageResponseTime.toFixed(2)}</p>
     `;
 }
+
+function extractResults() {
+    fetch('/extract_results', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+            stats: lastStats,
+            events: lastEvents,
+            averageMetrics: lastAverageMetrics
+        })
+    })
+        .then(res => res.json())
+        .then(data => {
+            const a = document.createElement('a');
+            a.href = data.url;
+            a.download = 'results.txt';
+            a.click();
+        })
+        .catch(err => console.error('Extract failed:', err));
+}
+
+ 
 
 function clearProcesses() {
     fetch('/clear', { method: 'POST' })
