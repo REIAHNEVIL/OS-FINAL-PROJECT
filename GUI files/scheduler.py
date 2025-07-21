@@ -333,7 +333,7 @@ def mlfq(processes, quantums, allotments):
 
         if remaining[pid] > 0:
             allotmentUsed[pid] += runTime
-            if allotmentUsed[pid] >= quantum * allotments[queueLevel]:
+            if allotmentUsed[pid] >=  allotments[queueLevel]:
                 if queueLevel < totalQueues - 1:
                     queues[queueLevel + 1].append((current, queueLevel + 1))
                     allotmentUsed[pid] = 0
